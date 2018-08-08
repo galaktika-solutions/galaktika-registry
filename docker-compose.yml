@@ -1,0 +1,16 @@
+version: '3.7'
+
+volumes:
+  data:
+
+services:
+  registry:
+    restart: always
+    image: registry:2.6.2
+    ports:
+      - 5000:5000
+    volumes:
+      - data:/var/lib/registry
+      - ./.env-files/:/certs
+      - ./.secret-files:/auth
+      - ./config.yml:/etc/docker/registry/config.yml

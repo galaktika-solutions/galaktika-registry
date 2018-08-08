@@ -7,13 +7,16 @@ storage:
     rootdirectory: /var/lib/registry
 delete:
     enabled: true
+htpasswd:
+    realm: basic-realm
+    path: /auth/htpasswd
 http:
   addr: localhost:5000
   tls:
-    certificate: /certificate.crt
-    key: /certificate.key
+    certificate: /certs/certificate.crt
+    key: /certs/certificate.key
     clientcas:
-      - /ca.crt
+      - /certs/ca.crt
   headers:
     X-Content-Type-Options: [nosniff]
 health:
