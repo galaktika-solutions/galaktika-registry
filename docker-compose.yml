@@ -5,12 +5,21 @@ volumes:
 
 services:
   registry:
-    restart: always
     image: registry:2.6.2
     ports:
       - 5000:5000
+    environment:
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/certificate.crt
+      REGISTRY_HTTP_TLS_KEY: /certs/certificate.key
+      REGISTRY_HTTP_TLS_CLIENTCAS: " - /certs/ca.crt"
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
     volumes:
-      - data:/var/lib/registry
-      - ./.env-files/:/certs
+      - data:/data
+      - ./.env-files/certificate.crt:/certs/certificate.crt
+      - ./.env-files/certificate.key:/certs/certificate.key
+      - ./.env-files/ca.crt:/certs/ca.crt
       - ./.secret-files:/auth
-      - ./config.yml:/etc/docker/registry/config.yml

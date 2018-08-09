@@ -15,4 +15,4 @@ openssl x509 -req -in certificate.csr -CA ca.crt -CAkey ca.key \
         -out certificate.crt -days 500 -sha256 \
         -CAcreateserial -CAserial ca.srl
 
-rm certificate.csr
+rm certificate.csr ca.srl

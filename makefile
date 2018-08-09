@@ -22,14 +22,15 @@ help:
 ## Run create_user command (sudo permission needed)
 .PHONY: create_user
 create_user:
-	@read -p "Enter User Name:" user
-	@read -s -p "Enter Password:" password
-	@echo ''; \
-	if [ -f $(htpasswd) ] ; \
-		then \
-				 sudo chmod 1000:1000 $(htpasswd) ; \
-		     sudo chmod 666 $(htpasswd) ; \
-		fi; \
-	docker-compose run --rm --user root --entrypoint htpasswd registry -Bbn $$user $$password >> $(htpasswd)
+	@echo 'Create a new user'; \
+	read -p "Enter User Name:" user; \
+	read -s -p "Enter Password:" password; \
+	docker-compose run --rm --entrypoint htpasswd registry -Bbn $$user $$password | grep $$user >> $(htpasswd)
 	@chmod 600 $(htpasswd)
-	@chown root:root $(htpasswd)
+	@echo -e '\r\nUser succesfully created'
+
+
+## Run create a certificate
+.PHONY: create_certificate
+create_certificate:
+	cd $(CURDIR)/.env-files/ && bash create_dev_certificates.sh
