@@ -3,6 +3,14 @@ version: '3.7'
 volumes:
   data:
 
+networks:
+  app:
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.16.238.0/24
+
 services:
   registry:
     image: registry:2.6.2
@@ -23,18 +31,26 @@ services:
       - ./.env-files/certificate.key:/certs/certificate.key
       - ./.env-files/ca.crt:/certs/ca.crt
       - ./.secret-files:/auth
+    networks:
+      app:
+        ipv4_address: 172.16.238.10
 
   cli:
     build:
       context: ./docker/cli
       dockerfile: Dockerfile
+    depends_on:
+      - registry
+    command: ["python", "/task.py"]
     env_file: .env
-    environment:
-      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/certificate.crt
-      REGISTRY_HTTP_TLS_KEY: /certs/certificate.key
-      REGISTRY_HTTP_TLS_CA: /certs/ca.crt
-    command: ["./registry.sh -c"]
     volumes:
+      - .secret:/.secret:ro
+      - ./docker/cli/registry.sh:/./registry.sh
+      - ./docker/cli/task.py:/./task.py
       - ./.env-files/certificate.crt:/certs/certificate.crt
       - ./.env-files/certificate.key:/certs/certificate.key
       - ./.env-files/ca.crt:/certs/ca.crt
+    extra_hosts:
+     - "${DOCKER_REGISTRY_NAME}:172.16.238.10"
+    networks:
+      app:

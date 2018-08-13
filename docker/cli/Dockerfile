@@ -9,3 +9,4 @@ RUN pip install --no-cache-dir \
       periodtask==0.5.4
 
 COPY registry.sh /registry.sh
+COPY task.py /task.py

@@ -34,3 +34,8 @@ create_user:
 .PHONY: create_certificate
 create_certificate:
 	cd $(CURDIR)/.env-files/ && bash create_dev_certificates.sh
+
+## Run create a certificate
+.PHONY: catalog
+catalog:
+	docker-compose run --rm cli ./registry.sh -c
