@@ -61,3 +61,14 @@ You will need `Docker`, `Docker Compose` and `make` installed.
     ```
 
 1.  Config your The client computer:
+    ```sh
+    sudo mkdir -p /etc/docker/certs.d/host:5000
+    sudo cp ./env-files/certificate.crt /etc/docker/certs.d/host:5000/client.cert
+    sudo cp ./env-files/certificate.key /etc/docker/certs.d/host:5000/client.key
+    sudo cp ./env-files/ca.crt /etc/docker/certs.d/host:5000/ca.cert
+    sudo systemctl restart docker
+    docker login host:5000
+    ```
+
+    if something wrong please check the official documentation
+    https://docs.docker.com/engine/security/certificates/
