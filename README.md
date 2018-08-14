@@ -9,8 +9,8 @@ command line tools and Docker images curator
 
 It is built for those who
 
-* wants production setup to be easy but secure
-* has a reasonable knowledge of Docker
+- wants production setup to be easy but secure
+- has a reasonable knowledge of Docker
 
 # Quick Start for Developers
 
@@ -44,6 +44,7 @@ You will need `Docker`, `Docker Compose` and `make` installed.
     ```
 
 1.  Configure you project by creating a `.secret` file in the project's root directory
+
     ```env
     DOCKER_REGISTRY_USER=user
     DOCKER_REGISTRY_PASSWORD=password
@@ -54,13 +55,15 @@ You will need `Docker`, `Docker Compose` and `make` installed.
 
 1.  Generate ssh certificate (for example: localhost) and create the first user.
     If you finish it you can start the project
+
     ```sh
     make create_certificate
     make create_user
     docker-compose up -d
     ```
 
-1.  Config your The client computer:
+1.  Config your client computer:
+
     ```sh
     sudo mkdir -p /etc/docker/certs.d/host:5000
     sudo cp ./env-files/certificate.crt /etc/docker/certs.d/host:5000/client.cert

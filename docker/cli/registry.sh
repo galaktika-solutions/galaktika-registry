@@ -13,7 +13,7 @@ days=$ROTATE_DAYS
 secret=$uname:$pass
 header='Accept: application/vnd.docker.distribution.manifest.v2+json'
 
-catalog=$(curl -k -u $secret --cacert $ca_path --cert $cert_path --key $key_path -X GET  \
+catalog=$(curl -s -k -u $secret --cacert $ca_path --cert $cert_path --key $key_path -X GET  \
   "https://$registry:5000/v2/_catalog" | jq -r ' .repositories | join ("\n")')
 
 
@@ -37,7 +37,7 @@ case "$1" in
     do
       echo "$image"
 
-      tag_list=$(curl -s -k -u $secret -X GET "https://$registry:5000/v2/$image/tags/list" \
+      tag_list=$(curl -s -k -u $secret --cacert $ca_path --cert $cert_path --key $key_path -X GET "https://$registry:5000/v2/$image/tags/list" \
         | jq -r 'select(.tags != null) | .tags | join ("\n")' | sort)
 
       error=$(echo $tag_list | grep NAME_UNKNOWN | wc -l)
@@ -48,7 +48,7 @@ case "$1" in
       else
         for tag in $tag_list
         do
-        manifest=$(curl -l -s -k -u $secret \
+        manifest=$(curl -l -s -k -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
           -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
           | grep "Docker-Content-Digest" | awk '{ print $2 }' | tr "\r" " ")
           echo "$manifest $tag"
@@ -72,7 +72,7 @@ case "$1" in
   fi
   for image in $images
   do
-    tag_list=$(curl -k -s -u $secret -X GET "https://$registry:5000/v2/$image/tags/list" \
+    tag_list=$(curl -k -s -u $secret --cacert $ca_path --cert $cert_path --key $key_path -X GET "https://$registry:5000/v2/$image/tags/list" \
       | tr "," "\n" | sed 's/[\(,"}]//g' | sed 's/]//g' | tr "[" "\n" | grep -v 'name\|tags')
     error=$(echo $tag_list | grep NAME_UNKNOWN | wc -l)
     if [ "$2" != "" ] && [ "$error" != 0 ]; then
@@ -83,7 +83,7 @@ case "$1" in
       list=()
       for tag in $tag_list
       do
-      manifest=$(curl -l -k -v -u $secret \
+      manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
         -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
         | grep "Docker-Content-Digest" | awk '{ print $2 }' | tr "\r" " ")
       list+=("${tag} ${manifest}")
@@ -91,7 +91,7 @@ case "$1" in
     fi
     for tag in $tags
     do
-      manifest=$(curl -l -k -v -u $secret \
+      manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
         -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
         | grep "Docker-Content-Digest" | awk '{ print $2 }')
       check_manifest=${manifest%$'\r'}
@@ -133,15 +133,15 @@ case "$1" in
   do
     DATE1=$(date +%Y-%m-%d)
     DAYS=$(echo $(( $days*86400 )))
-    tag_list=$(curl -s -k -u $secret -X GET "https://$registry:5000/v2/$image/tags/list" \
+    tag_list=$(curl -s -k -u $secret  --cacert $ca_path --cert $cert_path --key $key_path -X GET "https://$registry:5000/v2/$image/tags/list" \
         | jq -r 'select(.tags != null) | .tags | join ("\n")' | sort)
     list=()
-    latest=$(curl -l -k -v -u $secret \
+    latest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
       -H "$header" -I "https://$registry:5000/v2/$image/manifests/latest" 2>/dev/null \
       | grep "Docker-Content-Digest" | awk '{ print $2 }')
     for tag in $tag_list
     do
-      manifest=$(curl -l -k -v -u $secret \
+      manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
         -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
         | grep "Docker-Content-Digest" | awk '{ print $2 }' | tr "\r" " ")
       list+=("${tag} ${manifest}")
@@ -161,7 +161,7 @@ case "$1" in
         DIFF=$(echo $(( ( $(date -ud $DATE1 +'%s') - $(date -ud $DATE2 +'%s') ) )))
         DIFF=$(echo $(( $DIFF )))
         if [ $DIFF -gt $DAYS ]; then
-          manifest=$(curl -l -k -v -u $secret \
+          manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
             -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
             | grep "Docker-Content-Digest" | awk '{ print $2 }')
           check=$(echo "$manifest" | grep "$latest" | wc -l)
