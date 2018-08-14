@@ -119,7 +119,7 @@ case "$1" in
       URL=https://$registry:5000/v2/$image/manifests/$manifest
       URL=${URL%$'\r'}
       echo $URL
-      curl -k -u $secret -X DELETE $URL 2>/dev/null
+      curl -k -u $secret --cacert $ca_path --cert $cert_path --key $key_path -X DELETE $URL 2>/dev/null
       echo $image
       echo "$tag deleted"
     done
@@ -143,7 +143,7 @@ case "$1" in
     do
       manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
         -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
-        | grep "Docker-Content-Digest" | awk '{ print $2 }' | tr "\r" " ")
+        | grep "docker-content-digest" | awk '{ print $2 }' | tr "\r" " ")
       list+=("${tag} ${manifest}")
     done
     for tag in $tag_list
@@ -163,12 +163,12 @@ case "$1" in
         if [ $DIFF -gt $DAYS ]; then
           manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
             -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
-            | grep "Docker-Content-Digest" | awk '{ print $2 }')
+            | grep "docker-content-digest" | awk '{ print $2 }')
           check=$(echo "$manifest" | grep "$latest" | wc -l)
           if [ $check != 1 ]; then
             URL=https://$registry:5000/v2/$image/manifests/$manifest
             URL=${URL%$'\r'}
-            curl -k -u $secret -X DELETE $URL 2>/dev/null
+            curl -k -u $secret --cacert $ca_path --cert $cert_path --key $key_path -X DELETE $URL 2>/dev/null
             echo "$tag deleted"
           fi
         fi
