@@ -14,12 +14,12 @@ logging.basicConfig(level=logging.DEBUG)
 stdout_logger = logging.getLogger('periodtask.stdout')
 stderr_logger = logging.getLogger('periodtask.stderr')
 
-for line in open('/.secret','r'):
+for line in open('/.secret', 'r'):
     if "EMAIL_USER" in line:
-        user = line.strip('\n').split('=')[1]
+        user = line.eplace('EMAIL_USER=', '').replace('\n', '')
     elif "EMAIL_PASSWORD" in line:
-        password = line.strip('\n').split('=')[1]
-        
+        password = line.eplace('EMAIL_PASSWORD=', '').replace('\n', '')
+
 
 send_success = MailSender(
     os.environ.get('EMAIL_HOST'),
@@ -40,7 +40,9 @@ tasks = TaskList(
         ('./registry.sh', '-curator'),
         ['0 0 0 * * * UTC'],
         mail_success=None,
-        mail_failure=send_success, mail_skipped=send_success, mail_delayed=None,
+        mail_failure=send_success,
+        mail_skipped=send_success,
+        mail_delayed=None,
         wait_timeout=5,
         stop_signal=signal.SIGTERM,
         max_lines=10,
