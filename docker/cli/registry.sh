@@ -74,7 +74,7 @@ case "$1" in
   do
     tag_list=$(curl -k -s -u $secret --cacert $ca_path --cert $cert_path --key $key_path -X GET "https://$registry:5000/v2/$image/tags/list" \
       | tr "," "\n" | sed 's/[\(,"}]//g' | sed 's/]//g' | tr "[" "\n" | grep -v 'name\|tags')
-    error=$(echo $tag_list | grep NAME_UNKNOWN | wc -l)
+    error=$(echo $tag_list | grep "NAME_UNKNOWN" | wc -l)
     if [ "$2" != "" ] && [ "$error" != 0 ]; then
       echo "Image is not exists"
       exit 1
@@ -85,7 +85,7 @@ case "$1" in
       do
       manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
         -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
-        | grep "Docker-Content-Digest" | awk '{ print $2 }' | tr "\r" " ")
+        | grep "docker-content-digest" | awk '{ print $2 }' | tr "\r" " ")
       list+=("${tag} ${manifest}")
       done
     fi
@@ -93,7 +93,7 @@ case "$1" in
     do
       manifest=$(curl -l -k -v -u $secret --cacert $ca_path --cert $cert_path --key $key_path \
         -H "$header" -I "https://$registry:5000/v2/$image/manifests/$tag" 2>/dev/null \
-        | grep "Docker-Content-Digest" | awk '{ print $2 }')
+        | grep "docker-content-digest" | awk '{ print $2 }')
       check_manifest=${manifest%$'\r'}
       check=$(echo "${list[@]}" | sed 's/ sha256/,sha256/g' | tr ' ' '\n' \
       | tr ',' ' ' | grep  $check_manifest | awk '{print $1}')
