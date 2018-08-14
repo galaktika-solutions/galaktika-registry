@@ -98,7 +98,7 @@ case "$1" in
       check=$(echo "${list[@]}" | sed 's/ sha256/,sha256/g' | tr ' ' '\n' \
       | tr ',' ' ' | grep  $check_manifest | awk '{print $1}')
       check_number=$(echo "$check" |  wc -l)
-      if  [ "$check_number" != "1" ]; then
+      if  [ "$check_number" != "1" ] || [ "$4" == '-f' ]; then
         promptyn () {
             while true; do
                 read -p "$1 " yn
