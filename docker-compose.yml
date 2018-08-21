@@ -34,10 +34,7 @@ services:
     networks:
       app:
         ipv4_address: 172.16.238.10
-    restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+    restart: on-failure
 
   cli:
     build:
@@ -58,7 +55,4 @@ services:
      - "${DOCKER_REGISTRY_NAME}:172.16.238.10"
     networks:
       app:
-    restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
+    restart: on-failure
