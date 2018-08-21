@@ -16,9 +16,9 @@ stderr_logger = logging.getLogger('periodtask.stderr')
 
 for line in open('/.secret', 'r'):
     if "EMAIL_USER" in line:
-        user = line.eplace('EMAIL_USER=', '').replace('\n', '')
+        user = line.replace('EMAIL_USER=', '').replace('\n', '')
     elif "EMAIL_PASSWORD" in line:
-        password = line.eplace('EMAIL_PASSWORD=', '').replace('\n', '')
+        password = line.replace('EMAIL_PASSWORD=', '').replace('\n', '')
 
 
 send_success = MailSender(
